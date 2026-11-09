@@ -1,0 +1,222 @@
+# Build RideSafe — Complete Android Application
+
+Act as an experienced React Native and Android IoT application developer.
+
+Create a complete, functional Android application named **RideSafe – Smart Two-Wheeler Accident Detection & Emergency Alert System**.
+
+## Technology Stack
+
+- React Native with Expo and JavaScript
+- Android-first development
+- Bluetooth Low Energy using react-native-ble-manager
+- Expo development build (not Expo Go)
+- Expo Location for phone GPS
+- Local persistent storage for emergency contacts and settings
+- React Navigation for screen navigation
+- Android notifications and appropriate foreground-service/native functionality where required
+- EAS Build for generating installable APKs
+
+Use versions compatible with the project's installed Expo SDK.
+
+## Existing IoT Hardware
+
+The hardware is already working. Do not recreate the ESP32 firmware unnecessarily.
+
+Controller: ESP32-CAM-style ESP-32S board.
+
+Sensor: GY-521 (MPU6050).
+
+The ESP32 already detects possible accidents and transmits status through BLE.
+
+BLE configuration:
+
+- Device: RideSafe-ESP32
+- Service: 6E400001-B5A3-F393-E0A9-E50E24DCCA9E
+- TX (Notify/Read): 6E400003-B5A3-F393-E0A9-E50E24DCCA9E
+- RX (Write): 6E400002-B5A3-F393-E0A9-E50E24DCCA9E
+
+Received messages:
+
+- U = Calibration required
+- N,angle = Normal
+- S,angle = Suspicious movement
+- C,angle,seconds = Confirming fall
+- F,angle = Possible accident detected
+- E = Sensor error
+
+Commands sent to ESP32:
+
+- CAL = Calibrate upright position to 0 degrees
+- RESET = Reset fall detection
+
+Accident-detection values already implemented in firmware:
+
+- Acceleration threshold: 1.7 g
+- Rotation threshold: 140 degrees/second
+- Fall tilt: 65 degrees
+- Confirmation time: 5 seconds
+- Movement-to-tilt window: 4 seconds
+- Recovery angle: 45 degrees
+
+Do not alter these parameters unless explicitly requested.
+
+## Application Screens
+
+### 1. Home Dashboard
+
+Display RideSafe branding, device connection status, current tilt angle, sensor health, phone GPS readiness, emergency contact readiness and alert-system readiness.
+
+Include Start Ride, Connect Device and Settings controls.
+
+Display READY TO RIDE only when all critical safety checks pass.
+
+### 2. Bluetooth Device Screen
+
+Scan for RideSafe-ESP32, connect, disconnect and reconnect.
+
+Subscribe to BLE notifications and display live sensor status.
+
+Show understandable errors when Bluetooth is disabled, permissions are denied or the device disconnects.
+
+Include Calibrate Sensor and Reset Detection controls.
+
+### 3. Pre-Ride Safety Check
+
+Verify:
+
+- ESP32 connected and responding
+- GY-521 sensor working and calibrated
+- Phone location enabled and available
+- Emergency contacts configured
+- Emergency notification method configured and usable
+- Required Android permissions granted
+- Power status only if supported by actual hardware telemetry
+
+Never invent battery percentage or mark unsupported checks as passed.
+
+Provide a clear explanation and Fix button for each failed check.
+
+Only allow Start Ride when required checks succeed.
+
+### 4. Riding Dashboard
+
+Display active ride status, current tilt angle, BLE connection health and elapsed ride time.
+
+Provide End Ride and Emergency Help controls.
+
+The screen must remain responsive during continuous BLE updates.
+
+### 5. Emergency Contacts
+
+Allow the user to add, edit, remove and select trusted emergency contacts.
+
+Support manual entry and optional phone contact selection with permission.
+
+Store contacts persistently and privately.
+
+Allow the user to select multiple emergency recipients.
+
+### 6. Accident Warning Screen
+
+When the ESP32 reports an F event:
+
+- Display POSSIBLE ACCIDENT DETECTED.
+- Show a prominent 30-second countdown.
+- Trigger an appropriate local warning and vibration.
+- Show a large Cancel Alert button.
+- Prevent duplicated BLE notifications from restarting the countdown.
+- If cancelled, stop the emergency workflow and reset detection appropriately.
+- If the countdown expires, initiate the configured emergency notification workflow.
+
+Track each accident event separately to prevent duplicate alerts.
+
+### 7. Emergency Notification
+
+Prepare a message containing:
+
+"EMERGENCY: RideSafe detected a possible two-wheeler accident. The rider may need assistance. Location: [Google Maps URL]. Location recorded at: [date and time]. Please contact the rider and seek help if needed."
+
+Obtain current phone location where possible. If unavailable, use the latest valid stored location and clearly include its timestamp.
+
+Support:
+
+- A configured internet-based emergency messaging backend for unattended sending
+- Prefilled SMS through the phone's SMS application as a manual fallback
+- Clear sending status, error reporting and retry handling
+
+Do not claim that opening a prefilled SMS composer automatically sends a message.
+
+Do not add unrestricted SEND_SMS permission or claim automatic SMS is available without checking Android and Google Play requirements.
+
+Do not store SMS provider credentials in the Android application. Use a secure backend.
+
+Never send actual emergency test messages without explicit user consent.
+
+### 8. Settings
+
+Include emergency contacts, alert preferences, connection preferences, location permissions, detection status, notification settings and a test mode.
+
+## UI/UX Design
+
+Create a polished, premium Android application, not a basic academic demonstration.
+
+Theme:
+
+- Dark navy/black background
+- Neon purple and electric blue accents
+- Green for safe/connected status
+- Amber for warnings
+- Red for possible accidents
+- Rounded cards, readable typography and modern icons
+
+Use responsive layouts, smooth navigation, professional spacing and touch-friendly buttons.
+
+Design all screens consistently.
+
+## Reliability and Safety
+
+Handle Bluetooth disconnection, reconnection, repeated fall events, sensor faults, denied permissions, unavailable GPS, missing internet, unavailable cellular service and failed message delivery.
+
+Implement and test background BLE monitoring and locked-phone behavior where supported by Android.
+
+If reliable background operation requires a native Android foreground service or Companion Device APIs, explicitly implement the required native functionality instead of pretending ordinary JavaScript timers are sufficient.
+
+Clearly explain limitations when the app process is killed or Android restricts background work.
+
+Never claim emergency alerts are guaranteed to be delivered.
+
+## Architecture
+
+Separate code into reusable screens, components, BLE services, location services, notification services, settings and storage.
+
+Use persistent storage for configured contacts and preferences.
+
+Avoid unnecessary Firebase, cloud databases, login screens or paid services unless they serve an actual project requirement.
+
+If a backend is required for automated messaging, implement it separately and document its credentials, costs and deployment.
+
+## Development Instructions
+
+1. Create a complete runnable project with the correct folder structure.
+2. Provide exact package installation commands.
+3. Provide working code for all necessary files.
+4. Implement real BLE communication, not hardcoded fake sensor readings.
+5. Implement one feature at a time, testing each stage.
+6. Explain required Android permissions and native configuration.
+7. Provide the instructions to build and install an Android APK.
+8. Include realistic tests for normal use, accidents, cancellation, background behavior and connection failure.
+9. Do not remove existing working functionality when modifying the application.
+10. When I request a change, identify affected files and provide their complete updated code.
+
+**Important:** This is a real IoT prototype intended to work with my existing ESP32 device. Do not create a UI-only mockup. Clearly identify features that depend on unimplemented Android native functionality or a backend, and do not mark them as working until tested.
+
+Begin with the complete application architecture and project structure, then implement the Bluetooth-connected Home Dashboard first. Continue toward the full emergency-alert system without changing the established project requirements.
+
+
+
+now we are planning to build an android application for these specifications. 
+
+1. Login + Authentication(via firebase) 
+2. a dashboard
+3. a Page to add emergency contacts
+4. a page that will appear for this user that will display message, timer, stop button: should be enable to click in 5second, send button: it should automatically to these emergency contacts

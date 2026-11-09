@@ -1,0 +1,81 @@
+I am working on a **Design Thinking & UI/UX project report** for my MCA course. Our project is **RYDEX — Two-Wheeler Accident Detection and Emergency Alert System**.
+
+I am uploading our existing Word report, `Rydex_Design_Thinking_Project_Report.docx`. Please edit the uploaded document and give me a revised, downloadable **Word (.docx) file**.
+
+## 1. What I need you to do
+
+Revise **only the “5W + 1H Matrix” section on the last page of the report**. Do not simply copy and paste the existing 5W + 1H sentences into a table. I want a meaningful, analytical matrix that demonstrates our understanding of the problem.
+
+Our professor's instructions are:
+
+“Each team to work on the project to define the problem using brainstorming, mindmapping and apply 5W+1H and create maindmap and 5W+1H marix. This will be considered as a ISA of 20 marks.”
+
+The matrix must therefore show how the 5W + 1H analysis helps us define the problem and identify relevant design considerations.
+
+## 2. Use this matrix structure
+
+Create a professional table with **four columns**:
+
+1. **5W + 1H** — WHO, WHAT, WHEN, WHERE, WHY and HOW.
+2. **Guiding Question** — the question being investigated.
+3. **Problem Analysis** — a meaningful analysis of the situation, including the relevant factors and challenges.
+4. **Design Implications for Rydex** — what the analysis means for the proposed solution.
+
+Include all six dimensions, with a separate row for each.
+
+## 3. Project information — use this as the factual basis
+
+**Problem statement:** Two-wheeler riders are vulnerable to road accidents, especially when travelling alone or in areas where immediate assistance may not be available. After an accident, injuries or unconsciousness may prevent riders from contacting emergency services or sharing their location with family members. This can delay necessary assistance.
+
+**Proposed solution:** Rydex is a compact IoT-based accident detection and emergency alert system.
+
+- ESP32 microcontroller for device control and Bluetooth connectivity.
+- MPU6050 motion sensor to identify sudden movement or tilt patterns that may indicate a possible accident.
+- Bluetooth connection between the device and an Android mobile application.
+- A confirmation countdown that gives the rider an opportunity to cancel a false alert.
+- The application uses the phone's location and available communication services to notify selected emergency contacts.
+- Design priorities include affordability, ease of use and practicality for everyday riders.
+
+Our brainstorming and affinity groups cover accident challenges, accident detection, emergency communication, smart technology, and product design and usability. Preserve consistency with these existing sections.
+
+## 4. What each dimension should analyse
+
+Use these as analytical directions, not as sentences to copy verbatim.
+
+- **WHO:** Identify primary users and secondary stakeholders. Consider the needs of a rider who may be injured, unconscious, alone or unable to operate a phone. Explain the relevant usability implications.
+- **WHAT:** Identify the actual problem beyond the accident itself: the communication gap after a possible accident, inability to request help, difficulty sharing location and the possibility of false alerts. Connect these issues to the functions Rydex needs.
+- **WHEN:** Examine the critical post-accident period and circumstances that make manual communication difficult. Explain why timely notification and a cancellation countdown are relevant.
+- **WHERE:** Consider highways, rural roads, city streets and isolated routes. Explain the role of phone-based location sharing and the dependency on Bluetooth connectivity between the device and phone.
+- **WHY:** Explain why delayed notification matters and how inability to use a phone may delay assistance. Also consider the need to avoid unnecessary alerts and make the system practical and affordable.
+- **HOW:** Show the proposed workflow clearly: ESP32 and MPU6050 detect movement patterns that may indicate an accident → Bluetooth communicates the event to the Android app → cancellation countdown → phone location and available communication services → notification to selected emergency contacts. Explain the purpose of each stage.
+
+Do not claim that the system guarantees accident detection, GPS accuracy, network availability or emergency response. Describe sensor readings as indicating a **possible accident**, not confirming a crash.
+
+## 5. Add a concise problem-definition question
+
+After the matrix, add a short section titled **Problem Definition** with a question such as:
+
+“How might we help a two-wheeler rider get timely assistance after a possible accident when they may be unable to call for help or share their location themselves?”
+
+You may refine the wording while preserving the project's meaning.
+
+## 6. Formatting requirements
+
+- Maintain the existing report's professional academic style.
+- Use a clean, readable matrix with subtle colours, consistent typography, clear column headings and suitable cell spacing.
+- Keep the table compact enough to fit neatly into the existing final page if reasonably possible. If necessary, allow the section to flow onto an additional page rather than making the text too small.
+- Retain the existing header, footer, page numbering, cover page, team details and all other report sections.
+- Do not alter the brainstorming, sorting and affinity linking, or mind map sections.
+- Avoid excessive decoration, unnecessary icons or long paragraphs.
+- Use concise but meaningful academic language appropriate for an MCA Design Thinking & UI/UX assignment.
+
+## 7. Important instructions
+
+1. Open and inspect the uploaded Word document before editing it.
+2. Replace the existing 5W + 1H section rather than adding a duplicate section.
+3. Ensure the matrix contains genuine analysis and design implications, not merely reformatted versions of the original sentences.
+4. Preserve all unrelated content and formatting as much as possible.
+5. Generate the actual revised `.docx` file and provide a working download link.
+6. Verify that the saved document opens correctly and that the matrix is readable before sharing it.
+
+**Expected result:** A revised copy of my existing report with a stronger, four-column analytical 5W + 1H matrix and a concise problem-definition question, ready to include in our ISA submission.
