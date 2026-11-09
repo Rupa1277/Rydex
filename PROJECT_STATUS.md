@@ -2,7 +2,7 @@
 
 **Last updated:** 2026-11-09  
 **Project:** RideSafe — Smart Two-Wheeler Accident Detection & Emergency Alert System  
-**Status:** Early working prototype. Contact selection, a foreground countdown, and the Firebase/Twilio integration scaffold exist. The app is not yet connected to the ESP32 and automatic SMS has not been verified against a deployed service or a phone.
+**Status:** Early working prototype with a refreshed UI based on `documnets/Rydex_UI.png`. Contact selection, a foreground countdown, and the Firebase/Twilio integration scaffold exist. The app is not connected to the physical device and automatic SMS has not been verified against a deployed service or a phone.
 
 Use this document as the project’s ongoing status record. Update the date, tracker, validation results, and known limitations whenever implementation changes. The requirements source documents in `documnets/` are user-provided; leave them unchanged.
 
@@ -12,6 +12,7 @@ Use this document as the project’s ongoing status record. Update the date, tra
 
 - Shows an email/password sign-in and account-creation screen when the required Firebase client settings are present in a local `.env`.
 - Offers a local demo entry point. Demo mode does not authenticate and does not send SMS automatically.
+- Uses a dark, high-contrast visual style with blue/purple login actions, cyan safety indicators, card-based dashboard, contact list selection states, and a prominent orange SOS countdown treatment inspired by the screenshot in `documnets/Rydex_UI.png`.
 - Firebase Authentication uses persisted auth state on mobile through AsyncStorage and browser persistence on web.
 - Firebase configuration is currently absent from the repository; `.env.example` contains placeholders only.
 
@@ -68,7 +69,7 @@ Do not describe any of these as working until implemented and tested on the inte
 
 | File or directory | Purpose / current contents |
 |---|---|
-| `App.js` | Current app screens and state; Firebase sign-in, contact picker and persistence, location retrieval, timer, confirmation, SMS composer fallback, callable-function invocation. |
+| `App.js` | Current app screens and state; screenshot-inspired UI, Firebase sign-in, contact picker and persistence, location retrieval, timer, confirmation, SMS composer fallback, callable-function invocation. |
 | `index.js` | Expo/React Native application entry point. |
 | `app.json` | Expo app metadata and Contacts/Location plugins and permission text; Android blocks `WRITE_CONTACTS`. |
 | `src/services/firebase.js` | Firebase client initialization, Auth persistence, Functions region, and typed callable alert client. |
@@ -80,12 +81,14 @@ Do not describe any of these as working until implemented and tested on the inte
 | `.env.example` | Names/placeholders for public Firebase web-app configuration and Functions region. It is not a real project configuration. |
 | `.gitignore` | Ignores local `.env`, Firebase project selection, generated native folders and dependency/build artifacts. |
 | `SETUP.md` | Step-by-step Firebase, Twilio, deployment, and basic alert test setup. |
+| `documnets/Rydex_UI.png` | User-provided visual reference for the login, dashboard, contact, and SOS alert screens. |
 | `documnets/` | User-provided source briefs and design-thinking report. The directory spelling is existing project content. |
 
 ### Technology currently in use
 
 - Expo SDK 58 (`expo` package currently `~58.0.22`), React Native 0.88, React 19, JavaScript.
 - Expo Contacts, Location, SMS, and Status Bar packages.
+- Expo LinearGradient (`~58.0.3`) for the current branded buttons and safety cards.
 - AsyncStorage for local contact and Firebase Auth persistence.
 - Firebase JavaScript SDK for Email/Password Auth and callable Functions.
 - Firebase Admin SDK / Cloud Functions v2 callable API and Twilio in the separate backend.
@@ -106,9 +109,11 @@ The callable function is named `sendEmergencyAlert` and currently:
 
 This is a prototype safeguard, not a complete abuse-prevention or emergency-dispatch system. Review quota policy and cost controls before a public release. A timeout/retry after provider acceptance can create ambiguity; idempotency helps avoid repeat calls but is not a proof of exactly-once carrier delivery.
 
-## 5. Hardware contract from the source brief
+## 5. Hardware contract and physical hardware status
 
-The project brief `documnets/prompt 3.txt` describes an existing ESP32-CAM-style ESP-32S and GY-521 (MPU6050) device. It says the firmware already detects possible accidents; the mobile app should consume its BLE messages rather than recreate firmware detection logic.
+### Source-brief hardware target (not confirmed physically)
+
+The source brief `documnets/prompt 3.txt` describes an ESP32-based device using BLE and a GY-521 (MPU6050). Its UUIDs, messages, commands, and thresholds below are a reference contract for that target, not a confirmed working interface for the reported physical board.
 
 | Item | Briefed value |
 |---|---|
@@ -120,15 +125,22 @@ The project brief `documnets/prompt 3.txt` describes an existing ESP32-CAM-style
 | Commands | `CAL` calibrate upright; `RESET` reset fall detection |
 | Firmware thresholds (do not change without user approval) | 1.7 g acceleration; 140 degrees/second rotation; 65-degree fall tilt; 5-second confirmation; 4-second movement-to-tilt window; 45-degree recovery angle |
 
-Other source briefs contain an earlier ESP8266/Wi-Fi discussion. The project direction selected for the app is the ESP32 + BLE interface described in the app brief. The app still needs BLE work before this hardware contract is usable.
+### Physical hardware reported in prompt4
+
+- Board family: ESP8266; exact board model is not yet identified.
+- Sensor: GY-521 / MPU6050 reported available.
+- The ESP8266 does not include native BLE. Its communication method is not selected or verified.
+- Hardware integration is blocked until the board is identified and the communication method is chosen.
+- Do not assume the ESP32 BLE UUIDs work with the reported board. If using the ESP8266, assess Wi-Fi or external BLE hardware; if switching to ESP32, confirm the board and firmware first.
+- Do not change firmware detection thresholds without explicit user approval.
 
 ## 6. Progress tracker
 
-Statuses: **Done** means implemented in the repository; it does not necessarily mean verified on a real device. **In progress** means part of the implementation exists but setup or end-to-end proof is missing. **Not started** means no implementation is present.
+Use these evidence statuses consistently: **Implemented in source** means code exists, but may not have been tested; **Locally verified** means the stated local check passed; **Device verified** means tested on a physical Android device; **Service verified** means tested against deployed Firebase/Twilio; **Hardware verified** means tested with the actual board and sensor; **Not started** means no implementation exists.
 
-### Implemented
+### Implemented in source
 
-- [x] Expo app baseline and dark-themed login, dashboard, contact, and warning screens.
+- [x] Expo app baseline and screenshot-inspired dark login, dashboard, contact, and SOS countdown screens.
 - [x] Native phone contact picker and local add/select/remove/persistence flow.
 - [x] Contact and selected-recipient checks, including the five-recipient cap.
 - [x] 30-second foreground countdown, five-second cancellation lockout, and one-shot expiry handling.
@@ -140,19 +152,30 @@ Statuses: **Done** means implemented in the repository; it does not necessarily 
 - [x] Firebase Firestore client-deny rules and local secret/config ignore patterns.
 - [x] Setup guide and public Firebase config template.
 
-### Implemented but awaiting service/device verification
+### Implemented in source; awaiting device/service verification
 
-- [ ] Create/configure Firebase project, Authentication, Firestore, and local `.env`.
+- [ ] Configure Firebase project, Authentication, Firestore, and local `.env`.
 - [ ] Configure Twilio account, sender number, and Firebase secret values.
 - [ ] Deploy function and Firestore rules; confirm correct project and region.
 - [ ] Test signup/sign-in persistence and backend callable invocation on an Android development build.
 - [ ] Confirm Twilio acceptance and independently verify receipt with consenting test recipients.
 - [ ] Test contact picker, permission denial, location denial, SMS fallback and cancellation on a real device.
 
+### Locally verified
+
+- [x] ESLint and JavaScript type-check passed after the screenshot-inspired redesign.
+- [x] Android JavaScript bundle export passed after the screenshot-inspired redesign.
+- [ ] Resolve the Expo SDK patch mismatch (`58.0.22` versus expected `~58.0.23`) and rerun Expo Doctor.
+
+### Device, service, and hardware verified
+
+- None recorded yet. Physical Android, deployed Firebase/Twilio, and actual board/sensor verification are still outstanding.
+
 ### Not started — core application work
 
-- [ ] Integrate a BLE library compatible with Expo SDK 58 / current React Native architecture; confirm the chosen library’s current native requirements and Android permissions before installation.
-- [ ] Configure development build/EAS and Android BLE permissions through supported Expo configuration/plugin mechanisms.
+- [ ] Identify the physical board and choose ESP8266 Wi-Fi / external BLE or a confirmed ESP32 BLE design before implementing device communication.
+- [ ] Integrate a communication library compatible with Expo SDK 58 / current React Native architecture after the hardware path is confirmed; check its current native requirements and Android permissions.
+- [ ] Configure development build/EAS and required Android permissions through supported Expo configuration/plugin mechanisms.
 - [ ] Scan for `RideSafe-ESP32`, connect/disconnect, discover the documented service/characteristics, subscribe to TX notifications, and write `CAL` / `RESET` to RX.
 - [ ] Parse and validate `U`, `N,angle`, `S,angle`, `C,angle,seconds`, `F,angle`, and `E` messages; handle malformed data and duplicate events.
 - [ ] Connect a genuine `F` device event to the same cancellable alert workflow without allowing repeated notifications to restart the countdown.
@@ -167,15 +190,22 @@ Statuses: **Done** means implemented in the repository; it does not necessarily 
 
 ## 7. Validation record
 
-Most recent recorded checks after the client/backend scaffold and documentation work:
+Development environment and most recent recorded checks:
 
 | Check | Result | What it establishes / does not establish |
 |---|---|---|
-| `npx eslint .` | Passed | Static lint only; no runtime/device guarantee. |
+| Windows 11 | Reported confirmed in prompt4 | Development OS; not an app test. |
+| `node -v` | `v24.20.0` (2026-11-09) | Node.js installed. |
+| `npm -v` | `11.19.0` (2026-11-09) | npm installed. |
+| Visual Studio Code | Reported confirmed in prompt4 | Editor availability; not an app test. |
+| Android Studio / SDK | Not confirmed | Keep pending until installation is confirmed. |
+| `npx expo-doctor` | 19/20 passed (2026-11-09); Expo patch mismatch | `expo` is `58.0.22`; SDK expects `~58.0.23`. Remaining checks passed. |
+| `npx eslint .` | Passed after UI update | Static lint only; no runtime/device guarantee. |
 | `npx tsc --noEmit --allowJs --checkJs --jsx react-native --target es2022 --moduleResolution bundler --module esnext --customConditions react-native --skipLibCheck App.js src/services/firebase.js` | Passed | Type-checks the two JavaScript app files with the explicit CLI options; this repository does not currently have a project `tsconfig.json`. |
 | `node --check functions/src/index.js` | Passed | Function file parses; does not emulate Firebase, Firestore, or Twilio. |
 | `npx expo config --type public` | Passed | Expo config resolves; does not build/install native BLE functionality. |
-| `npx expo export --platform android` | Passed | Android JavaScript bundle exports; not an APK, native development build, BLE test, or service integration test. Generated `dist/` output was removed after validation. |
+| `npx expo export --platform android` | Passed after the UI redesign (2026-11-09) | Android JavaScript bundle export is not an APK, native development build, BLE test, or service integration test. |
+| `npx expo export --platform web` | Not available | `react-dom` and `react-native-web` are not installed; this task targeted the Android-first app. |
 | Real Firebase/Twilio test | Not run | No project credentials/secrets or deployed service are available. |
 | Android device / ESP32 test | Not run | No physical-device and hardware-in-loop verification is recorded. |
 
@@ -192,6 +222,8 @@ npx expo export --platform android
 ```
 
 `npx expo lint` may depend on the local Expo/ESLint setup; `npx eslint .` is the direct linter command used in the latest recorded validation.
+
+The current Expo Doctor run found one SDK patch mismatch (`expo` `58.0.22`; expected `~58.0.23`). Resolve it with the Expo-compatible version workflow after reviewing the dependency update, then rerun Expo Doctor.
 
 ### Start the app
 
@@ -211,7 +243,15 @@ Follow [SETUP.md](./SETUP.md) for the setup sequence. Key points:
 - Firebase Functions deployment requires an appropriately configured Firebase project/billing plan. Twilio trial restrictions and per-message charges may apply.
 - Use consenting test recipients and never claim successful dispatch until delivery is independently verified.
 
-## 9. Product and safety rules to preserve
+## 9. Privacy and data retention
+
+- **Stored on the device:** selected contact names, phone numbers, local contact identifiers, selection state, and Firebase Auth persistence. They remain in app-local AsyncStorage until the app data is cleared or the user removes contacts; no in-app account-data deletion flow is implemented.
+- **Sent to the backend when an automatic alert is invoked:** selected recipient phone numbers, alert event ID, and the current location coordinates/timestamp when available. Twilio receives destination number and emergency message content in order to submit SMS.
+- **Backend records:** Firestore stores per-user alert status, recipient count, timestamps, masked recipient suffixes, provider status/message IDs, and per-user usage-window counters. Admin SDK access is used by the Cloud Function; direct client Firestore access is denied by the rules.
+- **Retention/deletion:** no retention schedule, automatic TTL deletion, or user-facing delete-my-data process has been implemented. Retention and deletion policy are not finalized.
+- **Service failures:** if location is unavailable, the alert text indicates this. If the automatic service fails, the app reports the failure and offers a manual SMS composer. If Firebase/network/Twilio are unavailable, automatic delivery does not occur; provider acceptance is not delivery confirmation.
+
+## 10. Product and safety rules to preserve
 
 - Do not add unrestricted Android `SEND_SMS` permission to silently send from the phone; the supported fallback is a prefilled SMS composer.
 - Do not put Twilio secrets in the mobile bundle, source code, `.env`, screenshots, or chat.
@@ -222,11 +262,13 @@ Follow [SETUP.md](./SETUP.md) for the setup sequence. Key points:
 - Keep explicit user consent before real alert test messages.
 - Clearly show when the app is in demo mode and when the automatic backend is unavailable.
 
-## 10. Decision and change log
+## 11. Decision and change log
 
 | Date | Decision / change |
 |---|---|
-| 2026-11-09 | Current app direction follows the ESP32 BLE hardware contract from `documnets/prompt 3.txt`; automatic SMS uses a Firebase callable function and Twilio server-side integration; local fallback remains a user-operated SMS composer. |
+| 2026-11-09 | ESP32 BLE details in `documnets/prompt 3.txt` are a source-brief reference only. Prompt4 records physical hardware as an ESP8266 of unknown model and GY-521; hardware integration is blocked pending confirmation and communication-method selection. |
 | 2026-11-09 | Recorded the current implemented scope, outstanding setup, and unimplemented BLE/background work in this status document. |
+| 2026-11-09 | Implemented the UI direction from `documnets/Rydex_UI.png` in login, dashboard, contacts, and SOS countdown screens; Expo LinearGradient added. Validation is pending for this redesign. |
+| 2026-11-09 | Windows environment check recorded: Node.js v24.20.0 and npm 11.19.0; Expo Doctor reported 19/20 checks passing, with the Expo patch version mismatch noted above. |
 
 When recording a new entry, include the date, decision or delivered change, affected files/features, validation performed, and any remaining caveat.
